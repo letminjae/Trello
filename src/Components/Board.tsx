@@ -2,7 +2,8 @@ import { Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import DragabbleCard from "./DragabbleCard";
 import { useForm } from "react-hook-form";
-import { ITodo } from "../atoms";
+import { ITodo, toDoState } from "../atoms";
+import { useSetRecoilState } from "recoil";
 
 const Wrapper = styled.div`
   width: 300px;
@@ -57,9 +58,22 @@ interface IHookForm {
 
 function Board({ toDos, boardId }: IBoardProps) {
   const { register, setValue, handleSubmit } = useForm<IHookForm>();
-  const onValid = ( { toDo } : IHookForm) => {
+
+  const setToDos = useSetRecoilState(toDoState);
+
+  const onValid = ({ toDo }: IHookForm) => {
+    const newToDo = {
+      id: Date.now(),
+      text: toDo,
+    };
+    setToDos((allBoards) => {
+      return {
+        ...allBoards,
+        [boardId]: [...allBoards[boardId], newToDo],
+      };
+    });
     setValue("toDo", "");
-  }
+  };
 
   return (
     <Wrapper>
@@ -80,7 +94,12 @@ function Board({ toDos, boardId }: IBoardProps) {
             {...magic.droppableProps}
           >
             {toDos.map((toDo, index) => (
-              <DragabbleCard key={toDo.id} index={index} toDoId={toDo.id} toDoText={toDo.text} />
+              <DragabbleCard
+                key={toDo.id}
+                index={index}
+                toDoId={toDo.id}
+                toDoText={toDo.text}
+              />
             ))}
             {magic.placeholder}
           </Area>
