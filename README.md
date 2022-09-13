@@ -1,46 +1,53 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Trello
 
-## Available Scripts
+## React-Beautiful-dnd
 
-In the project directory, you can run:
+### 리액트에서 드래그 앤 드롭을 쉽게하기위해선?
 
-### `npm start`
+- React로 list를 만들기 위한 아름답고 접근 가능한 드래그 앤 드롭 라이브러리
+```jsx
+npm i react-beautiful-dnd
+npm i --save-dev @types/react-beautiful-dnd
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React 18버전에서 에러가 난다면
+```jsx
+npm i @types/react-beautiful-react-dnd --legacy-peer-deps
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### DragDropContext
 
-### `npm test`
+- 기본적으로 드래그 앤 드롭을 가능하게 하고 싶은 앱의 한 부분
+- `onDragEnd` 라는 필수 prop을 가진다
+- DragDropContext에는 하위 children이 있어야한다.
+- `Droppable` : 우리가 어떤 것을 드롭할 수 있는 영역
+    - droppableId라는 필수 prop을 가져 id로 식별
+    - Droppable에는 하위 children이 있어야한다.
+    - children은 함수여야 한다 : Droppable 안에 컴포넌트를 넣으면 바로 사용할 수 있는 무언갈 얻기 때문이다.
+- `Draggable` : 우리가 어떤 것을 드래그할 수 있는 영역
+    - droppableId라는 필수 prop을 가져 id로 식별, index라는 필수 prop이 있어 sorting이 필요할때 사용
+    - children은 함수여야 한다 : Draggable 안에 컴포넌트를 넣으면 바로 사용할 수 있는 무언갈 얻기 때문이다.
+- `Provided` : Droppable, Draggable에서 주는 첫번째 argument. magic이라고 이름지어 사용하였다.
+- Draggable 및 Droppable 컴포넌트 모두 HTMLElement(children)를 제공해야 한다. 이것은 DraggableProvided 및 DroppableProvided 객체의 `innerRef 속성`을 사용하여 수행된다.
+- dragHandleProps : 특정 영역을 통해서만 드래그를 가능하도록 하고 싶을 때 사용한다.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```tsx
+// DraggableCard.tsx
+function DragabbleCard({ toDoId, toDoText, index }: IDragabbleCardProps) {
+  return (
+    <Draggable draggableId={toDoId+ ""} index={index}>
+      {(magic, snapshot) => (
+        <Card
+          isDragging={snapshot.isDragging}
+          ref={magic.innerRef}
+          {...magic.dragHandleProps}
+          {...magic.draggableProps}
+        >
+          {toDoText}
+        </Card>
+      )}
+    </Draggable>
+  );
+}
+```
