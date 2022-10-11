@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { toDoState } from "./atoms";
+import { saveTodos, toDoState } from "./atoms";
 import Board from "./Components/Board";
 
 const Wrapper = styled.div`
@@ -56,6 +57,11 @@ function App() {
       });
     }
   };
+
+  useEffect(() => {
+    saveTodos(toDos);
+  }, [toDos]);
+  
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>

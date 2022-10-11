@@ -4,6 +4,7 @@ import DragabbleCard from "./DragabbleCard";
 import { useForm } from "react-hook-form";
 import { ITodo, toDoState } from "../atoms";
 import { useSetRecoilState } from "recoil";
+import { useRef } from "react";
 
 const Wrapper = styled.div`
   width: 300px;
@@ -43,6 +44,7 @@ const Area = styled.div<IAreaProps>`
 const Form = styled.form`
   width: 100%;
   input {
+    border: none;
     width: 100%;
   }
 `;

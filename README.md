@@ -64,8 +64,69 @@ function DragabbleCard({ toDoId, toDoText, index }: IDragabbleCardProps) {
 }
 ```
 
+### Board Movement : 할일 이동 로직
+
+- 같은 게시판에서 이동할 때 : destination의 droppableId와 source의 droppableID가 같을 때.
+  - 수정이 일어난 게시판만 얕은복사. 이후 복사본을 기존 게시판에 붙여준다.
+
+- 다른 게시판으로 이동할 때 (Ex. Doing에서 Done으로 이동할 때) : 
+
+```tsx
+  const onDragEnd = (info: DropResult) => {
+    const { destination, draggableId, source } = info;
+    if (!destination) return;
+    if (destination?.droppableId === source.droppableId) {
+      // same board movement.
+      setTodos((allBoards) => {
+        // 게시판 복사본(boardCopy) = ...모든 게시판[선택한 droppableId]
+        const boardCopy = [...allBoards[source.droppableId]];
+        // 선택된 할일 = 게시판 복사본[선택한 게시판의 index]
+        const taskObj = boardCopy[source.index];
+        // splice하여 요소를 하나 뺀뒤, destination으로 붙여준다.
+        boardCopy.splice(source.index, 1);
+        boardCopy.splice(destination?.index, 0, taskObj);
+        // return 값은 모든 게시판 복사후, 수정이 일어난 게시판을 다시 붙여줌.
+        // 예를 들어 Doing에 변화가 일어났다? [source.droppableId]는 Doing.
+        return {
+          ...allBoards,
+          [source.droppableId]: boardCopy,
+        };
+      });
+    }
+    if (destination.droppableId !== source.droppableId) {
+      // cross board movement
+      setTodos((allBoards) => {
+        const sourceBoard = [...allBoards[source.droppableId]];
+        const taskObj = sourceBoard[source.index];
+        // 다른 게시판으로 이동해야하니 옮겨갈 게시판의 변수를 하나 설정해준다.
+        const destinationBoard = [...allBoards[destination.droppableId]];
+        // 마찬가지로 splice로 요소를 하나 뺀뒤, 옮겨갈 게시판에다가 붙여줌. 
+        sourceBoard.splice(source.index, 1);
+        destinationBoard.splice(destination?.index, 0, taskObj);
+        return {
+          ...allBoards,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard,
+        };
+      });
+    }
+  };
+```
+
+- Droppablestate snapshot
+  - `isDraggingOver: boolean` - 현재 선택한 Draggable이 특정 Droppable위에 드래깅 되고 있는지 여부 확인
+  - `draggingOverWith: ?DraggableId` - Droppable 위로 드래그하는 Draggable ID
+  - `draggingFromThisWith: ?DraggableId` - 현재 Droppable에서 벗어난 드래깅되고 있는 Draggable ID
+  - `isUsingPlaceholder: boolean` - placeholder가 사용되고 있는지 여부
+
+
 ### 트러블 슈팅 : 드래그 앤 드롭 시 텍스트가 이상해지거나 간헐적으로 드래그 드롭이 안되는 문제
 
 - 모든 Card 컴포넌트들을 다시 리렌더링, 즉 드래그 하지않는 Card들도 리렌더링 하다보니 간헐적으로 간극이 생겨 버그가 생김
-
-- 
+  - 자식 컴포넌트들에 대한 불필요한 리렌더링을 방지해주기 위해 React.memo 사용
+  ```tsx
+  function MyComponent(props) {
+  /* props를 사용하여 렌더링 */
+  }
+  export default React.memo(MyComponent, areEqual);
+  ```
