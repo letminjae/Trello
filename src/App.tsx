@@ -3,10 +3,13 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { saveTodos, toDoState } from "./atoms";
+import { AddCategoryButton } from "./Components/AddCategory";
 import Board from "./Components/Board";
 
 const Wrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 20px;
   width: 100vw;
   margin: 0 auto;
   justify-content: center;
@@ -61,10 +64,11 @@ function App() {
   useEffect(() => {
     saveTodos(toDos);
   }, [toDos]);
-  
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
+      <AddCategoryButton />
         <Boards>
           {Object.keys(toDos).map((boardId) => (
             <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
