@@ -1,6 +1,8 @@
 
 # Trello
 
+<img src ="https://user-images.githubusercontent.com/96935557/195057656-8ab81f72-6ee0-4c5b-9b1b-e4325a41e83b.gif">
+
 ## React-Beautiful-dnd
 
 ### 리액트에서 드래그 앤 드롭을 쉽게하기위해선?
